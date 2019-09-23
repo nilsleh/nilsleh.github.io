@@ -4,6 +4,8 @@ main:
     url: /about/
   - title: "Projects"
     url: /projects/
+  - title: "Amsterdam Wikipedia"
+    url: https://en.wikipedia.org/wiki/Amsterdam
   # - title: "Sample Posts"
   #   url: /year-archive/
   # - title: "Sample Collections"
