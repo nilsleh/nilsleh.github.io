@@ -2,8 +2,6 @@
 main:
   - title: "About"
     url: /about/
-  - title: "Projects"
-    url: /projects/
   - title: "Amsterdam Wikipedia"
     url: https://en.wikipedia.org/wiki/Amsterdam
   # - title: "Sample Posts"
