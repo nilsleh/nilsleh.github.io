@@ -2,8 +2,6 @@
 main:
   - title: "About"
     url: /about/
-  - title: "Projects"
-    url: /dataScience/
   # - title: "Sample Posts"
   #   url: /year-archive/
   # - title: "Sample Collections"
