@@ -2,6 +2,6 @@
 title: "About"
 permalink: /about/
 header:
-  image: "/images/backgroundJavaVolcano.jpg"
+  image: "/images/backgroundJavaVolcanoCropped.jpg"
 ---
-Thank you for stopping by my blog.
+Thanks for stopping by. My name is Nils Lehmann and I am currently pursuing a master's degree in Artificial Intelligence at the University of Amsterdam. Previously, I received an athletic and academic scholarship to Rollins College where I played Basketball and studied Math, Economics and Computer Science. I am fascinated by the possibilities of using technology for social, humanitarian and environmental challenges and hope to contribute. 
