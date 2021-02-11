@@ -52,7 +52,7 @@ From the data exploration phase where the wind speed of a storm was plotted over
 
 <img textAlign="center" src="../assets/images/2021_01_29/smoothedPredictions.png">
 
-One common approach in competitions like these is to train multiple models and average their predictions, which usually leads to an overall better result. In my case I finetuned three different ResNet 50 models, averaged and smoothed the predictions, which lead to my best score of 8.23 and place 6 out of 700 on the [leaderboard](https://www.drivendata.org/competitions/72/predict-wind-speeds/leaderboard/){:target="_blank"}.
+One common approach in competitions like these is to train multiple models and average their predictions, which usually leads to an overall better result. In my case I finetuned three different ResNet 50 models, averaged and smoothed the predictions, which lead to my best score of 8.23 and place 26 out of 700 on the [leaderboard](https://www.drivendata.org/competitions/72/predict-wind-speeds/leaderboard/){:target="_blank"}.
 
 ## Takeaways
 In the following paragraph I list several ideas that I played with but ended up not using because they didn't work as well as things I learned from this project.
