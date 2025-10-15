@@ -1,0 +1,63 @@
+name: Jekyll Site Build and Deploy
+
+# This workflow will only run when changes are pushed to the 'nils' branch.
+on:
+  push:
+    branches:
+      - nils
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions granted to the GITHUB_TOKEN for the deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # Job to build the Jekyll site
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Check out the code from the branch that triggered the workflow
+          # This should be the 'nils' branch based on the trigger above
+          ref: ${{ github.ref }} 
+          
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          # Use the latest Ruby version supported by Jekyll/GitHub Actions
+          ruby-version: '3.3' 
+          bundler-cache: true # Installs dependencies from Gemfile.lock
+
+      - name: Install Dependencies and Build Jekyll Site
+        # The 'bundle exec' command ensures that we use the gem versions 
+        # specified in your Gemfile.lock, resolving the 'toc' and other errors.
+        run: |
+          bundle install
+          bundle exec jekyll build --baseurl ""
+
+      - name: Setup Pages
+        # Set up the Pages environment for deployment
+        uses: actions/setup-pages@v4
+
+      - name: Upload Artifact
+        # Upload the generated static files from the default Jekyll output directory (_site)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  # Job to deploy the artifact to GitHub Pages
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
