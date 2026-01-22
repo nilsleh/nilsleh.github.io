@@ -97,7 +97,7 @@ The bar plot visualizes these difference, for the pre date (blue), post date(ora
 
 ## Implications for Normalization
 
-TerraMesh provides precomputed z-score normalization statistics (mean and standard deviation per channel). When these statistics are computed across a mixed population of harmonized and unharmonized data, the resulting normalization becomes problematic.
+TerraMesh provides precomputed z-score normalization statistics (mean and standard deviation per channel). When these statistics are computed across a mixed population of harmonized and unharmonized data, the resulting normalization can become problematic, because trained models will have a certain expectation of value ranges for downstream tasks, especially with frozen evaluation.
 
 <!-- ### Batch-Level Variance
 
