@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/repositories/";
           },
-        },{id: "post-investigating-a-hidden-data-inconsistency-in-terramesh-the-sentinel-2-baseline-processing-shift",
+        },{id: "post-sparse-track-interpolation",
+        
+          title: "Sparse Track Interpolation",
+        
+        description: "",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/sparse-track-interpolation/";
+          
+        },
+      },{id: "post-investigating-a-hidden-data-inconsistency-in-terramesh-the-sentinel-2-baseline-processing-shift",
         
           title: "Investigating a Hidden Data Inconsistency in TerraMesh: The Sentinel-2 Baseline Processing Shift",
         
