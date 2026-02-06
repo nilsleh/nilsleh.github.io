@@ -1,4 +1,11 @@
-# Bilinear Interpolation and Sparse Satellite Tracks
+---
+layout: post
+title: "Bilinear Interpolation and Sparse Satellite Tracks"
+date: 2026-02-05 12:00:00
+description: Blindly using Bilinear Interpolation
+tags: datasets machine-learning
+categories: blog
+---
 
 In my current work on data assimilation, the task involves querying satellite altimetry tracks for a given geospatial region and feeding them into a machine learning model. Given the curved grid that these tracks are on, sometimes a geospatial query will retrieve desired patch sizes that are not exactly the exact desired patch sizes of let's say 128x128. Therefore, we need to resize/interpolate them as part of the data retrieval pipeline. However, I had blindly applied the standard PyTorch bilinear interpolation that is commonly used for images. Turns out this of course creates issues with sparse data.
 
