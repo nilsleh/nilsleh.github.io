@@ -30,11 +30,11 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/repositories/";
           },
-        },{id: "post-sparse-track-interpolation",
+        },{id: "post-bilinear-interpolation-and-sparse-satellite-tracks",
         
-          title: "Sparse Track Interpolation",
+          title: "Bilinear Interpolation and Sparse Satellite Tracks",
         
-        description: "",
+        description: "Blindly using Bilinear Interpolation",
         section: "Posts",
         handler: () => {
           
