@@ -24,7 +24,7 @@ Any operation involving NaN produces NaN. So if even *one* of the four neighbors
 
 <div class="row justify-content-center">
     <div class="col-sm-10">
-        <img src="/assets/img/blog/sparse_tracks/dummy_interpolation.png" alt="Different interpolation methods applied to sparse altimetry trackss." width="800" class="img-fluid" />
+        <img src="/assets/img/blog/sparse_tracks/dummy_interpolation.png" alt="Different interpolation methods applied to sparse altimetry trackss." width="100%" class="img-fluid" />
     </div>
 </div>
 
