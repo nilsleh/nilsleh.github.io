@@ -7,11 +7,11 @@ tags: datasets machine-learning
 categories: blog
 ---
 
-In my current work on data assimilation, the task involves querying satellite altimetry tracks for a given geospatial region and feeding them into a machine learning model. Given the curved grid that these tracks are on, sometimes a geospatial query will retrieve desired patch sizes that are not exactly the exact desired patch sizes of let's say 128x128. Therefore, we need to resize/interpolate them as part of the data retrieval pipeline. However, I had blindly applied the standard PyTorch bilinear interpolation that is commonly used for images. Turns out this of course creates issues with sparse data.
+In my current work on data assimilation, the task involves querying satellite altimetry tracks for a given geospatial region and feeding them into a machine learning model. Given the curved grid that we have interpolated these tracks on, a geospatial query will retrieve a patch that is not exactly the desired patch sizes of ML ready inputs. Therefore, we need to resize/interpolate them as part of the data retrieval pipeline. However, I had blindly applied the standard PyTorch bilinear interpolation that is commonly used for standard images which causes a nice silent bug in the data pipeline.
 
 ## The Setup
 
-The particular tracks come from satellite altimetry that measure sea surface height. Unlike a standard RGB imagery or a dense grid of weather data, these observations are inherently *sparse*. A typical retrieved region might be 180×150 pixels, but only a thin set of near-vertical tracks actually contain valid measurements. The rest is NaN — no data. Coverage might sit at just 5–10% of the the full patch size.
+The particular tracks come from satellite altimetry that measure sea surface height. Unlike a standard RGB imagery or a dense grid of weather data, these observations are inherently *sparse*. A typical retrieved region might be 180×150 pixels, but only a thin set of near-vertical tracks actually contain valid measurements. The rest is NaN, no data. Coverage might just be 5–10% of the full patch size.
 
 However, oftentimes ML pipeline need fixed-size inputs (say, 128×128), so at some point the retrieved geospatial patch has to be resized. The default approach in the Computer Vision domain is to use PyTorch's `F.interpolate` with `mode="bilinear"` , which is commonly seen in every deep learning code base.
 
@@ -19,7 +19,7 @@ However, oftentimes ML pipeline need fixed-size inputs (say, 128×128), so at so
 
 After noticing the issue, that the interpolation was removing much if not all of the original sparse tracks, I wanted to understand the issue in more detail. Bilinear interpolation computes a weighted average of the four nearest source pixels for every output pixel. That works beautifully when all four neighbors contain valid data. But when most of the grid is NaN, the arithmetic falls apart immediately.
 
-Any operation involving NaN produces NaN. So if even *one* of the four neighbors is NaN — which, in a 5% coverage field, is almost guaranteed — the output pixel becomes NaN, meaning that the bilinear resize of sparse track data returns an almost entirely empty grid. Coverage drops from a modest but usable percentage to effectively zero. Your model receives a observation with no data.
+Any operation involving NaN produces NaN. So if even *one* of the four neighbors is NaN (which, in a 5% coverage field, is almost guaranteed) the output pixel becomes NaN, meaning that the bilinear resize of sparse track data returns an almost entirely empty grid. Coverage drops from a modest but usable percentage to effectively zero. Your model receives a observation with no data.
 
 
 <div class="row justify-content-center">
@@ -30,7 +30,7 @@ Any operation involving NaN produces NaN. So if even *one* of the four neighbors
 
 ## Nearest Neighbor: A simple fix
 
-The simplest fix is `mode="nearest"`. Nearest-neighbor interpolation just copies the value of the single closest source pixel — no averaging, no neighbor mixing. Since it never combines pixels, a NaN stays a NaN and a valid value stays valid. Coverage is preserved.
+The simplest fix is `mode="nearest"`. Nearest-neighbor interpolation just copies the value of the single closest source pixel, no averaging, no neighbor mixing. Since it never combines pixels, a NaN stays a NaN and a valid value stays valid. Coverage is preserved.
 
 The downside however is that the output can look blocky. There's no smoothing, and the spatial structure has these staircase artifacts. So are there other approaches. Together with Claude I went down a little rabbit hole.
 
@@ -59,7 +59,7 @@ def sparse_resize(data, size, mode="bilinear"):
     return output
 ```
 
-This is elegant because it reuses the exact same bilinear kernel — you get the same smooth interpolation behavior — but the mask normalization ensures that the *magnitude* of the signal is preserved regardless of local data density. Tracks don't bleed away into nothing. The coverage in the output closely tracks the coverage in the input, just remapped to the target grid.
+This is elegant because it reuses the exact same bilinear kernel with the same smooth interpolation behavior, but the mask normalization ensures that the *magnitude* of the signal is preserved regardless of local data density. Tracks don't bleed away into nothing. The coverage in the output closely tracks the coverage in the input, just remapped to the target grid.
 
 Also note that we are interested in keeping track of the NaN areas before the data becomes a model input, because we need data availability as a mask.
 
@@ -88,11 +88,11 @@ In practice, the two mask-weighted methods produce similar results. The choice b
 
 ## A Note on Coverage
 
-Looking at the comparison plot, one thing stands out: the mask-weighted methods don't just preserve coverage — they actually *increase* it. The original data sits at 6.20% coverage, and nearest-neighbor faithfully preserves that at 6.18%. But sparse resize jumps to 12.59% and adaptive pooling to 13.73%.
+Looking at the comparison plot, one thing stands out: the mask-weighted methods don't just preserve coverage, they actually *increase* it. The original data sits at 6.20% coverage, and nearest-neighbor faithfully preserves that at 6.18%. But sparse resize jumps to 12.59% and adaptive pooling to 13.73%.
 
-This makes sense once you think about what each method is doing geometrically. In sparse resize, the bilinear kernel blends across a small neighborhood, so an output pixel can become valid even if only *some* of its four neighbors held data — as long as the interpolated mask exceeds the 1e-4 threshold. The interpolation effectively smears the tracks slightly wider than they were in the original. Similarly, adaptive pooling groups source pixels into rectangular bins, and any bin containing at least 5% valid pixels produces a valid output. Since a bin can span several source columns, a track that was one pixel wide in the source might contribute valid data to a wider footprint in the output.
+This makes sense once you think about what each method is doing geometrically. In sparse resize, the bilinear kernel blends across a small neighborhood, so an output pixel can become valid even if only *some* of its four neighbors held data, as long as the interpolated mask exceeds the 1e-4 threshold. The interpolation effectively smears the tracks slightly wider than they were in the original. Similarly, adaptive pooling groups source pixels into rectangular bins, and any bin containing at least 5% valid pixels produces a valid output. Since a bin can span several source columns, a track that was one pixel wide in the source might contribute valid data to a wider footprint in the output.
 
-In both cases, the mask-and-divide approach is more permissive than the original binary valid/invalid distinction — it recovers partial information from mixed neighborhoods. Nearest-neighbor, by contrast, does a strict one-to-one copy, so coverage stays almost identical (the tiny 0.02% drop is just rounding from the grid remapping).
+In both cases, the mask-and-divide approach is more permissive than the original binary valid/invalid distinction, it recovers partial information from mixed neighborhoods. Nearest-neighbor, by contrast, does a strict one-to-one copy, so coverage stays almost identical (the tiny 0.02% drop is just rounding from the grid remapping).
 
 Whether this extra coverage is desirable depends on the use case. If you want to preserve exactly the spatial footprint of the original observations, nearest-neighbor is more faithful. If you're okay with mild spatial smoothing in exchange for denser inputs to your model, the mask-weighted methods give you that for free.
 
@@ -100,6 +100,6 @@ Whether this extra coverage is desirable depends on the use case. If you want to
 
 The fix here isn't complicated, but this was a classic silent bug, where the pipeline runs smoothly but carrying a severe bug. The failure mode is insidious precisely because bilinear interpolation is so universally used.
 
-Sparse geospatial observations — altimetry tracks, scattered in-situ measurements, cloud-gapped satellite imagery — break that assumption quietly. No error is raised, the tensor has the right shape, and the pipeline runs.
+Sparse geospatial observations such as altimetry tracks or scattered in-situ measurements break that assumption quietly. No error is raised, the tensor has the right shape, and the pipeline runs.
 
 If you want to play around with this yourself, I made a small self-contained script that generated the above figure. It is available in this [gist](https://gist.github.com/nilsleh/a4803ca9a8e8c1675c2fc7dd7fecc48a).
