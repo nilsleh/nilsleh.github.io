@@ -32,11 +32,11 @@ Any operation involving NaN produces NaN. So if even *one* of the four neighbors
 
 The simplest fix is `mode="nearest"`. Nearest-neighbor interpolation just copies the value of the single closest source pixel, no averaging, no neighbor mixing. Since it never combines pixels, a NaN stays a NaN and a valid value stays valid. Coverage is preserved.
 
-The downside however is that the output can look blocky. There's no smoothing, and the spatial structure has these staircase artifacts. So are there other approaches. Together with Claude I went down a little rabbit hole.
+The downside however is that the output can look blocky. There's no smoothing, and the spatial structure has these staircase artifacts. So are there other approaches? Together with Claude I went down a little rabbit hole.
 
 ## Sparse Resize: Mask-Weighted Bilinear Interpolation
 
-This is where things get more interesting. The core idea is: *what if we could do bilinear interpolation, but only over the valid pixels?*
+So what are other possible alternativves? One idea is: *what if we could do bilinear interpolation, but only over the valid pixels, while accounting for the sparse tracks explicitly?*
 
 The approach works in two parallel streams:
 
