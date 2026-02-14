@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Understanding Distributed Model Training at Scale - From Academic Experiments to Production Systems"
-date: 2026-02-15 12:00:00
+date: 2026-02-13 12:00:00
 description: Understanding what actually changes when training moves from a handful of GPUs to large-scale distributed systems.
 tags: datasets machine-learning distributed-systems
 categories: blog
