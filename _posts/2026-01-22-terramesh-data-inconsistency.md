@@ -134,12 +134,11 @@ Models pretrained on TerraMesh that just use the existing normalization stats ma
 I hypothesize that:
 - Performance on downstream tasks using pre-2022 imagery may differ from post-2022 imagery
 - Fine-tuning with unharmonized data may yield suboptimal results if the pretrained representations expect the mixed distribution
-- More attention to normalization matching between pretraining and downstream data should be taken into account
 
 
-### Experimental results
+<!-- ### Experimental results
 
-I am conducting further experiments that test the impact of this discrepancy and check the listed hypothesis above. While it theoretically should make a difference, it is also possible that the alchemy of deep learning finds a way around it.
+I am conducting further experiments that test the impact of this discrepancy and check the listed hypothesis above. While it theoretically should make a difference, it is also possible that the alchemy of deep learning finds a way around it. -->
 
 ## Conclusion
 
