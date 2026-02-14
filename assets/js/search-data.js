@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/repositories/";
           },
-        },{id: "post-bilinear-interpolation-and-sparse-satellite-tracks",
+        },{id: "post-understanding-distributed-model-training-at-scale-from-academic-experiments-to-production-systems",
+        
+          title: "Understanding Distributed Model Training at Scale - From Academic Experiments to Production Systems...",
+        
+        description: "Understanding what actually changes when training moves from a handful of GPUs to large-scale distributed systems.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/distributed-training-intro/";
+          
+        },
+      },{id: "post-bilinear-interpolation-and-sparse-satellite-tracks",
         
           title: "Bilinear Interpolation and Sparse Satellite Tracks",
         
